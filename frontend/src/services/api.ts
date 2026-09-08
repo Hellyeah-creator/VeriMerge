@@ -1,4 +1,4 @@
-﻿import {
+import {
   DashboardStats,
   Source,
   SourcePreview,
@@ -11,7 +11,9 @@
   SystemSettings
 } from '../types';
 
-const BASE_URL = '/api';
+// Use environment variable if configured (for production Vercel deployment), otherwise fallback to '/api'
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, '') || '/api';
+
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, options);
