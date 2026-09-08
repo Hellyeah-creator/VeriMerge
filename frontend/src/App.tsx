@@ -27,15 +27,23 @@ import {
   AuditLog
 } from "./types";
 import { api } from "./services/api";
+import {
+  mockDashboardStats,
+  mockSources,
+  mockEntities,
+  mockReviewConflicts,
+  mockAuditLogs
+} from "./services/mockData";
 
 export function App() {
   const [currentTab, setCurrentTab] = useState<string>("dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [sources, setSources] = useState<Source[]>([]);
-  const [entities, setEntities] = useState<Entity[]>([]);
-  const [reviewConflicts, setReviewConflicts] = useState<Conflict[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [stats, setStats] = useState<DashboardStats>(mockDashboardStats);
+  const [sources, setSources] = useState<Source[]>(mockSources);
+  const [entities, setEntities] = useState<Entity[]>(mockEntities);
+  const [reviewConflicts, setReviewConflicts] = useState<Conflict[]>(mockReviewConflicts);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
+
 
   const [selectedEntityDetail, setSelectedEntityDetail] = useState<EntityDetail | null>(null);
   const [graphEntityId, setGraphEntityId] = useState<number | undefined>(undefined);

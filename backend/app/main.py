@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
@@ -7,11 +7,34 @@ import app.models # Register all models
 # Create database tables automatically
 Base.metadata.create_all(bind=engine)
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Auto-seed demo data on first boot if database has no records
+    try:
+        from app.core.database import SessionLocal
+        from app.models.record import SourceRecord
+        from app.api.reconciliation import load_and_run_demo
+        db = SessionLocal()
+        try:
+            if db.query(SourceRecord).count() == 0:
+                print("Database is empty. Auto-seeding initial demo data...")
+                load_and_run_demo(db)
+                print("Auto-seed completed successfully!")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Startup seed notice: {e}")
+    yield
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="AI-Powered Evidence-First Record Reconciliation Platform",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
+
 
 # Enable CORS for frontend dashboard
 app.add_middleware(
