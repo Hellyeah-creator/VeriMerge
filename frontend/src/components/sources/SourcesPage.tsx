@@ -26,6 +26,8 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
   const [sourceType, setSourceType] = useState("CRM");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [previewData, setPreviewData] = useState<SourcePreview | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -34,6 +36,8 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
     if (e.target.files && e.target.files[0]) {
       const f = e.target.files[0];
       setSelectedFile(f);
+      setUploadError(null);
+      setUploadSuccess(null);
       if (!sourceName) {
         setSourceName(f.name.replace(/\.[^/.]+$/, ""));
       }
@@ -47,9 +51,13 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
     try {
       setIsUploading(true);
       setUploadError(null);
-      await api.uploadSource(selectedFile, sourceName || undefined, sourceType);
+      setUploadSuccess(null);
+      const res = await api.uploadSource(selectedFile, sourceName || undefined, sourceType);
       setSelectedFile(null);
       setSourceName("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setUploadSuccess(`Successfully ingested "${res.name}" (${res.total_records} records, ${res.total_columns} columns)`);
+      setTimeout(() => setUploadSuccess(null), 6000);
       onRefresh();
     } catch (err: any) {
       setUploadError(err.message || "Failed to upload file");
@@ -57,6 +65,7 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
       setIsUploading(false);
     }
   };
+
 
   const handlePreview = async (sourceId: number) => {
     try {
@@ -138,6 +147,7 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
           {/* File Input Box */}
           <div className="relative border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-xl p-5 sm:p-6 text-center transition-colors bg-slate-900/30">
             <input
+              ref={fileInputRef}
               type="file"
               accept=".csv,.xlsx,.xls,.json"
               onChange={handleFileChange}
@@ -156,6 +166,13 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
             </div>
           </div>
 
+          {uploadSuccess && (
+            <div className="text-xs text-emerald-300 bg-emerald-950/50 border border-emerald-700/60 rounded-lg p-3 flex items-center space-x-2 animate-fade-in">
+              <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{uploadSuccess}</span>
+            </div>
+          )}
+
           {uploadError && (
             <div className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 rounded-lg p-3">
               {uploadError}
@@ -164,6 +181,7 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ sources, onRefresh, on
 
           <div className="flex justify-stretch sm:justify-end">
             <button
+
               type="submit"
               disabled={!selectedFile || isUploading}
               className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-cyan-900/20 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
