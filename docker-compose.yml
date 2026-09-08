@@ -1,0 +1,53 @@
+﻿version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: verimerge-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: verimerge
+      POSTGRES_PASSWORD: verimerge_password
+      POSTGRES_DB: verimerge_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U verimerge -d verimerge_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: verimerge-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://verimerge:verimerge_password@db:5432/verimerge_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - AUTO_RESOLVE_THRESHOLD=90.0
+      - HUMAN_REVIEW_THRESHOLD=70.0
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: verimerge-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  pgdata:

@@ -1,0 +1,22 @@
+[
+  {
+    "source_portal": "MCA Corporate Registry API",
+    "entity_name": "John Smith",
+    "address": "12 MG Road",
+    "phone": "+91 9876543210",
+    "company": "TechCorp Limited",
+    "registration_id": "U72200KA2018PTC112345",
+    "verified_status": "ACTIVE",
+    "authority_weight": 0.95
+  },
+  {
+    "source_portal": "State Business Registry",
+    "entity_name": "Acme Global Corp",
+    "address": "45 Cyber City, Tower B",
+    "phone": "+1 415 555 0192",
+    "company": "Acme Global Corporation",
+    "registration_id": "CIN-US99201982",
+    "verified_status": "ACTIVE",
+    "authority_weight": 0.95
+  }
+]

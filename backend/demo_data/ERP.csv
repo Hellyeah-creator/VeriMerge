@@ -1,0 +1,4 @@
+record_id,client_name,office_address,phone,corporate_entity,primary_email,director_name,bank_details,cin
+ERP-9021,J. Smith,18 MG Rd,+91 9876543210,TechCorp Limited,john.smith@techcorp.io,Raj Kumar,•••• 8765,U72200KA2018PTC112345
+ERP-9022,Acme Global Corporation,"45 Cyber City, Tower B",+1 415 555 0192,Acme Global Corp,finance@acmeglobal.com,David Vance,•••• 8812,CIN-US99201982
+ERP-9023,Sarah Jenkins,"104 Market Blvd, Suite 400",+1 212 555 3421,Jenkins Analytics Inc,s.jenkins@jenkinsanalytics.com,Sarah Jenkins,•••• 9901,TAX-7729104
